@@ -89,7 +89,7 @@ class Graph(object):
 # Generically, Node | str --> Node. Else --> None.
 def getNd(n):
     if isinstance(n, str):  return Node(n);
-    elif isinstance(n, type(self.graph.keys()[0])):  return n;
+    elif isinstance(n, Node):  return n;
     else: return None;
 
 
@@ -140,18 +140,18 @@ class Edge(object):
 # Clust: An overarching class to 1) hold Graph, Node, Edge, and Cluster objects and
 #  2) to provide most of the utility functions as needed by the clustering process.
 class Clust(object):
-    G = None
+
+    G = None # to become a Graph object
     def __init__(self, filename='graph_file.txt'):
         if filename:
             f = open(filename, 'r')
-            self.G = self.Graph(self.read_dict_from_file(f))
+            self.G = Graph(self.read_dict_from_file(f))
             f.close()
 
-    # Clust's class functions. Have access to all Clust's fields, functions, classes.
-
+    # Clust's class functions
     def quick_test(self, n1='Poland', n2='Brunei'):
-        N1 = self.Node(n1)
-        N2 = self.Node(n2)
+        N1 = Node(n1)
+        N2 = Node(n2)
         print N1 == N2, N1 == N1
         for nname in self.G.NodeNames():
             sys.stdout.write( nname + ', ')
@@ -159,7 +159,7 @@ class Clust(object):
         print self.G.n_names.keys()[1], self.G.n_names.values()[1]
         for x in self.G.graph.values()[self.G.n_names.values()[1]]:
             print x.src.name, x.dest.name, x.weight
-        E1 = self.Edge((self.G.getN(N1), self.G.getN(N2), 0))
+        E1 = Edge((self.G.getN(N1), self.G.getN(N2), 0))
         Eset = self.G.edges(N1)
         print " * ", E1, Eset, ">>"
         
@@ -175,11 +175,11 @@ class Clust(object):
             k, v = line.split(': ')
             k = k.strip("'")
             v = v.strip('[]},\n').split('), (')
-            n = self.Node(k)
+            n = Node(k)
             graph[n] = []
             for t in v:
                 t = t.strip(")'](\n, ").split("', '")
-                graph[n].append(self.Edge(tuple(t[:3])))
+                graph[n].append(Edge(tuple(t[:3])))
         return graph
 
 
